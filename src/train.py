@@ -3,6 +3,7 @@ import math
 import logging
 import pickle
 import torch
+import torch.nn as nn
 from torch import optim
 from torch.autograd import Variable
 from torch.nn.utils import clip_grad_norm
@@ -84,6 +85,7 @@ def main():
                     n_layers=2, dropout=0.5)
     decoder = Decoder(embed_size, hidden_size, de_size,
                     n_layers=1, dropout=0.5)
+    seq2seq = Seq2Seq(encoder, decoder)
     seq2seq = nn.DataParallel(seq2seq).cuda()
     optimizer = optim.Adam(seq2seq.parameters(), lr=lr)
     logger.debug(seq2seq)
