@@ -32,14 +32,16 @@ def collate_fn(data):
 
     # Merge captions (from tuple of 1D tensor to 2D tensor).
     src_len = [len(src) for src in sources]
-    conv_src = torch.zeros(len(sources), max(src_len)).long()
+    trg_len = [len(trg) for trg in targets]
+    max_len = max(max(src_len), max(trg_len))
+
+    conv_src = torch.zeros(len(sources), max_len).long()
     for i, cap in enumerate(sources):
         end = src_len[i]
         conv_src[i, :end] = cap[:end] 
         
     # Merge captions (from tuple of 1D tensor to 2D tensor).
-    trg_len = [len(trg) for trg in targets]
-    conv_trg = torch.zeros(len(targets), max(trg_len)).long()
+    conv_trg = torch.zeros(len(targets), max_len).long()
     for i, cap in enumerate(targets):
         end = trg_len[i]
         conv_trg[i, :end] = cap[:end] 
