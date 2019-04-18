@@ -100,7 +100,7 @@ def main():
     # Save the model if the validation loss is the best we've seen so far.
     if val_loss < best_val_loss:
         logger.debug("save model (epoch: {0})".format(e))
-        torch.save(seq2seq.state_dict(), '/data/sakka/seq2seq_model/best_model.pth')
+        torch.save(seq2seq.state_dict(), '../data/model/best_model.pth')
         best_val_loss = val_loss
 
 if __name__ == "__main__":
