@@ -80,11 +80,11 @@ def main():
     val_iter = get_dataset("../data/datasets/val.csv", en_vocab, de_vocab, batch_size, shuffle, num_workers)
 
     logger.debug("[!] Instantiating models...")
-    encoder = Encoder(de_size, embed_size, hidden_size,
+    encoder = Encoder(en_size, embed_size, hidden_size,
                     n_layers=2, dropout=0.5)
-    decoder = Decoder(embed_size, hidden_size, en_size,
+    decoder = Decoder(embed_size, hidden_size, de_size,
                     n_layers=1, dropout=0.5)
-    seq2seq = Seq2Seq(encoder, decoder).cuda()
+    seq2seq = nn.DataParallel(seq2seq).cuda()
     optimizer = optim.Adam(seq2seq.parameters(), lr=lr)
     logger.debug(seq2seq)
 
