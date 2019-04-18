@@ -80,9 +80,9 @@ def main():
     val_iter = get_dataset("../data/datasets/val.csv", en_vocab, de_vocab, batch_size, shuffle, num_workers)
 
     logger.debug("[!] Instantiating models...")
-    encoder = Encoder(en_size, embed_size, hidden_size,
+    encoder = Encoder(de_size, embed_size, hidden_size,
                     n_layers=2, dropout=0.5)
-    decoder = Decoder(embed_size, hidden_size, de_size,
+    decoder = Decoder(embed_size, hidden_size, en_size,
                     n_layers=1, dropout=0.5)
     seq2seq = Seq2Seq(encoder, decoder).cuda()
     optimizer = optim.Adam(seq2seq.parameters(), lr=lr)
@@ -92,7 +92,7 @@ def main():
     for e in range(1, epochs+1):
         train(e, seq2seq, optimizer, train_iter,
             de_size, grad_clip, en_vocab, de_vocab)
-        val_loss = evaluate(seq2seq, val_iter, de_size, en_vocab, de_vocab)
+        val_loss = evaluate(seq2seq, val_iter, en_size, en_vocab, de_vocab)
         logger.debug("[Epoch:%d] val_loss:%5.3f | val_pp:%5.2fS"
         % (e, val_loss, math.exp(val_loss)))
 
