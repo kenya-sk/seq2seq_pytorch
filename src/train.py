@@ -1,13 +1,14 @@
 import os
 import math
 import logging
+import pickle
 import torch
 from torch import optim
 from torch.autograd import Variable
 from torch.nn.utils import clip_grad_norm
 from torch.nn import functional as F
 from model import Encoder, Decoder, Seq2Seq
-from utils import Vocabulary, load_dataset
+from utils import Vocabulary
 from data_loader import get_dataset
 
 logger = logging.getLogger(__name__)
@@ -54,6 +55,8 @@ def main():
     grad_clip = 10.0
     hidden_size = 512
     embed_size = 256
+    suffle = True
+    num_workers = 1
 
     # Is GPU usable?
     assert torch.cuda.is_available()
@@ -69,12 +72,12 @@ def main():
     with open(de_vocab_path, "rb") as f:
         de_vocab = pickle.load(f)
     logger.debug("decoder vocab size: {}".format(len(de_vocab)))
-
-    logger.debug("[!] preparing dataset...")
-    train_iter = get_dataset("../data/datasets/train.csv")
-    val_iter = get_dataset("../data/datasets/val.csv")
     en_size, de_size = len(en_vocab), len(de_vocab)
     logger.debug("[formal_vocab]:%d [tweet_vocab]:%d" % (en_size, de_size))
+
+    logger.debug("[!] preparing dataset...")
+    train_iter = get_dataset("../data/datasets/train.csv", en_vocab, de_vocab, batch_size, shuffle, num_workers)
+    val_iter = get_dataset("../data/datasets/val.csv", en_vocab, de_vocab, batch_size, shuffle, num_workers)
 
     logger.debug("[!] Instantiating models...")
     encoder = Encoder(en_size, embed_size, hidden_size,
