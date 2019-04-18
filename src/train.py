@@ -55,7 +55,7 @@ def main():
     grad_clip = 10.0
     hidden_size = 512
     embed_size = 256
-    suffle = True
+    shuffle = True
     num_workers = 1
 
     # Is GPU usable?
