@@ -62,12 +62,12 @@ def load_model(model_path, params):
                 params["encoder_dim"], n_layers=1, dropout=0.0
     )
 
+    # load seq2seq model
     seq2seq_model = Seq2Seq(encoder, decoder)
-    seq2seq_model.load_dict(torch.load(model_path))
-
-    # if only use CPU
-    # seq2seq_model.load_state_dict(torch.load(model_path, map_location=lambda storage, loc: storage))
-
-    print("DONE: loaded model")
-
+    if torch.cuda.is_available():
+        seq2seq_model.load_dict(torch.load(model_path))
+    else:
+        # if only use CPU
+        seq2seq_model.load_state_dict(torch.load(model_path, map_location=lambda storage, loc: storage))
+        
     return seq2seq_model
