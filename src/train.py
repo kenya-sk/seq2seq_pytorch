@@ -93,7 +93,7 @@ def main():
     for e in range(1, epochs+1):
         train(e, seq2seq, optimizer, train_iter,
             de_size, grad_clip, en_vocab, de_vocab)
-        val_loss = evaluate(seq2seq, val_iter, en_size, en_vocab, de_vocab)
+        val_loss = evaluate(seq2seq, val_iter, de_size, en_vocab, de_vocab)
         logger.debug("[Epoch:%d] val_loss:%5.3f | val_pp:%5.2fS"
         % (e, val_loss, math.exp(val_loss)))
 
