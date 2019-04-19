@@ -98,7 +98,7 @@ class Seq2Seq(nn.Module):
 
         encoder_output, hidden = self.encoder(src)
         hidden = hidden[:self.decoder.n_layers]
-        output = Variable(trg.data[0, :])  # sos
+        output = Variable(trg.data[0, :])  # <start>
         for t in range(1, max_len):
             output, hidden, attn_weights = self.decoder(
                     output, hidden, encoder_output)

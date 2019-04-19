@@ -74,10 +74,13 @@ def main(args):
     # setting seq2seq model 
     logger.debug("Instantiating models...")
     encoder = Encoder(en_size, args.embed_size, args.hidden_size,
-                    n_layers=2, dropout=0.5)
+                    n_layers=args.en_n_layers, dropout=args.en_dropout)
     decoder = Decoder(args.embed_size, args.hidden_size, de_size,
-                    n_layers=1, dropout=0.5)
+                    n_layers=args.de_n_layers, dropout=args.de_dropout)
     seq2seq = Seq2Seq(encoder, decoder).cuda()
+    if args.pre_trained_path is not None:
+        seq2seq.load_state_dict(torch.load(args.pre_trained_path))
+        logger.debug("Load pretrained  model: {0}".format(args.pre_trained_path))
     optimizer = optim.Adam(seq2seq.parameters(), lr=args.lr)
     logger.debug(seq2seq)
 
@@ -110,9 +113,14 @@ def make_parse():
     parser.add_argument("--val_path", type=str, default="/content/gdrive/My Drive/seq2seq_pytorch/data/datasets/val.csv")
     parser.add_argument("--en_vocab_path", type=str, default="/content/gdrive/My Drive/seq2seq_pytorch/data/vocab/en_vocab.pth")
     parser.add_argument("--de_vocab_path", type=str, default="/content/gdrive/My Drive/seq2seq_pytorch/data/vocab/de_vocab.pth")
+    parser.add_argument("--pre_trained_path", type=str, default=None)
     parser.add_argument("--save_model_path", type=str, default="/content/gdrive/My Drive/seq2seq_pytorch/data/model/best_model.pth")
 
     # params Argument
+    parser.add_argument("--en_n_layers", type=int, default=2)
+    parser.add_argument("--de_n_layers", type=int, default=1)
+    parser.add_argument("--en_dropout", type=float, default=0.5)
+    parser.add_argument("--de_dropout", type=float, default=0.5)
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--batch_size", type=int, default=32)
     parser.add_argument("--lr", type=float, default=0.0001)
