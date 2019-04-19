@@ -12,11 +12,11 @@ from model import Encoder, Decoder, Seq2Seq
 
 
 def conv_text2id(text, vocab):
-    id_lst = [vocab.idx2word["<start>"]]
+    id_lst = [vocab.word2idx["<start>"]]
     for ch in str(text):
-        id_lst.append(vocab.idx2word[ch])
+        id_lst.append(vocab.word2idx[ch])
 
-    id_lst.append(vocab.idx2word["<end>"])
+    id_lst.append(vocab.word2idx["<end>"])
     return id_lst
 
 
@@ -29,7 +29,7 @@ def prediction(src_text, en_vocab, de_vocab, model):
 
     pred_lst = []
     for i in range(output.shape[0]):
-        max_idx = np.argmax(output[i]).data.cpu()
+        max_idx = int(np.argmax(output[i]).data.cpu())
         pred_lst.append(de_vocab.idx2word[max_idx])
 
     return pred_lst
@@ -48,8 +48,8 @@ if __name__ == "__main__":
     # load model
     en_size = len(en_vocab)
     de_size = len(de_vocab)
-    embed_dim = 512
-    hidden_dim = 256
+    embed_dim = 256
+    hidden_dim = 512
     en_n_layers = 2 
     en_dropout = 0.0
     de_n_layers = 1
@@ -66,4 +66,5 @@ if __name__ == "__main__":
     # source text
     src_text = "ああああああ"
 
-    prediction(src_text, en_vocab, de_vocab, seq2seq)
+    pred_lst = prediction(src_text, en_vocab, de_vocab, seq2seq)
+    print(pred_lst)
