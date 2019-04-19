@@ -147,5 +147,5 @@ if __name__ == "__main__":
     
     try:
         main(args)
-    except KeyboardInterrupt as eroor:
+    except KeyboardInterrupt as error:
         print("[STOP]", error)
