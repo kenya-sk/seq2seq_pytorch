@@ -73,9 +73,9 @@ def main(args):
 
     # setting seq2seq model 
     logger.debug("Instantiating models...")
-    encoder = Encoder(en_size, args.embed_size, args.hidden_size,
+    encoder = Encoder(en_size, args.embed_dim, args.hidden_dim,
                     n_layers=args.en_n_layers, dropout=args.en_dropout)
-    decoder = Decoder(args.embed_size, args.hidden_size, de_size,
+    decoder = Decoder(args.embed_dim, args.hidden_dim, de_size,
                     n_layers=args.de_n_layers, dropout=args.de_dropout)
     seq2seq = Seq2Seq(encoder, decoder).cuda()
     if args.pre_trained_path is not None:
