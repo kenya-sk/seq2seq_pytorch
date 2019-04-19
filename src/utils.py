@@ -44,7 +44,7 @@ def to_variable(x):
 def caption_tensor(caption, vocab):
     target = []
     target.append(vocab("<start>"))
-    target.extend([vocab(char) for char in caption])
+    target.extend([vocab(char) for char in str(caption)])
     target.append(vocab("<end>"))
     target = torch.Tensor(target)
 
