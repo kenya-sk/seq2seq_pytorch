@@ -3,6 +3,7 @@ import math
 import logging
 import argparse
 import pickle
+from tqdm import tqdm
 import torch
 import torch.nn as nn
 from torch import optim
@@ -19,7 +20,7 @@ def evaluate(model, val_iter, vocab_size, en_vocab, de_vocab):
     model.eval()
     pad = en_vocab.word2idx['<pad>']
     total_loss = 0
-    for src, trg in val_iter:
+    for src, trg in tqdm(val_iter, desc="Validation"):
         src = src.data.cuda()
         trg = trg.data.cuda()
         output = model(src, trg, teacher_forcing_ratio=0.0)
@@ -34,7 +35,7 @@ def train(epoch, model, optimizer, train_iter, vocab_size, grad_clip, en_vocab, 
     model.train()
     total_loss = 0
     pad = en_vocab.word2idx['<pad>']
-    for src, trg in train_iter:
+    for src, trg in tqdm(train_iter, desc="Training"):
         src, trg = src.cuda(), trg.cuda()
         optimizer.zero_grad()
         output = model(src, trg)
