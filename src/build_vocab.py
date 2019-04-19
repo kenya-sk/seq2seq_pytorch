@@ -53,6 +53,7 @@ def build(cap_lst, save_path, min_freq=2):
 
 def main():
     data_df = pd.read_csv("../data/datasets/train.csv")
+    # threshold of word frequency
     min_freq = 2
 
     # build encoder vocabulary
