@@ -64,12 +64,12 @@ def main():
 
     # load vocab
     logger.debug("[!] loading vocabulary...")
-    en_vocab_path = "../data/vocab/en_vocab.pth"
+    en_vocab_path = "/content/gdrive/My Drive/seq2seq_pytorch/data/vocab/en_vocab.pth"
     with open(en_vocab_path, "rb") as f:
         en_vocab = pickle.load(f)
     logger.debug("encoder vocab size: {}".format(len(en_vocab)))
         
-    de_vocab_path = "../data/vocab/de_vocab.pth"
+    de_vocab_path = "/content/gdrive/My Drive/seq2seq_pytorch/data/vocab/de_vocab.pth"
     with open(de_vocab_path, "rb") as f:
         de_vocab = pickle.load(f)
     logger.debug("decoder vocab size: {}".format(len(de_vocab)))
@@ -77,8 +77,8 @@ def main():
     logger.debug("[formal_vocab]:%d [tweet_vocab]:%d" % (en_size, de_size))
 
     logger.debug("[!] preparing dataset...")
-    train_iter = get_dataset("../data/datasets/train.csv", en_vocab, de_vocab, batch_size, shuffle, num_workers)
-    val_iter = get_dataset("../data/datasets/val.csv", en_vocab, de_vocab, batch_size, shuffle, num_workers)
+    train_iter = get_dataset("/content/gdrive/My Drive/seq2seq_pytorch/data/datasets/train.csv", en_vocab, de_vocab, batch_size, shuffle, num_workers)
+    val_iter = get_dataset("/content/gdrive/My Drive/seq2seq_pytorch/data/datasets/val.csv", en_vocab, de_vocab, batch_size, shuffle, num_workers)
 
     logger.debug("[!] Instantiating models...")
     encoder = Encoder(en_size, embed_size, hidden_size,
@@ -100,11 +100,11 @@ def main():
     # Save the model if the validation loss is the best we've seen so far.
     if val_loss < best_val_loss:
         logger.debug("save model (epoch: {0})".format(e))
-        torch.save(seq2seq.state_dict(), '../data/model/best_model.pth')
+        torch.save(seq2seq.state_dict(), '/content/gdrive/My Drive/seq2seq_pytorch/data/model/best_model.pth')
         best_val_loss = val_loss
 
 if __name__ == "__main__":
-    logs_path = "../logs/train.log"
+    logs_path = "/content/gdrive/My Drive/seq2seq_pytorch/logs/train.log"
     logging.basicConfig(filename=logs_path,
                         level=logging.DEBUG,
                         format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s")
