@@ -1,11 +1,6 @@
 import numpy as np
-import pandas as pd
-import os
 import pickle
 import torch
-import torch.nn as nn
-import torchvision.models as models
-import torchvision.transforms as transforms
 from torch.autograd import Variable
 
 from model import Encoder, Decoder, Seq2Seq
@@ -64,7 +59,7 @@ if __name__ == "__main__":
     seq2seq.load_state_dict(torch.load(model_path, map_location=lambda storage, loc: storage))
 
     # source text
-    src_text = "ああああああ"
+    src_text = "森のぼかしの使い方と揺れ方"
 
     pred_lst = prediction(src_text, en_vocab, de_vocab, seq2seq)
     print(pred_lst)
