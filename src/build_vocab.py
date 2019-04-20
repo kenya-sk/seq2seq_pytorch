@@ -13,6 +13,15 @@ logging.basicConfig(filename=log_path,
                     format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s")
 
 
+def split_word(text, tokenizer):
+    text = text.replace(" ", "").replace("　", "")
+    word_lst = []
+    for token in tokenizer.tokenize(text):
+        word_lst.append(token.surface)
+
+    return word_lst
+    
+
 def build_vocab(word_lst, size=10000):
     vocab = Vocabulary()
     vocab.add_word("<pad>")
@@ -28,23 +37,24 @@ def build_vocab(word_lst, size=10000):
 
 def build(cap_lst, save_path, min_freq=2):
     # freq of each character
-    char2cnt = defaultdict(int)
-    for cap in cap_lst:
+    tokenizer = Tokenizer()
+    word2cnt = defaultdict(int)
+    for cap in tqdm(cap_lst):
         try:
-            for ch in cap:
-                char2cnt[str(ch)] += 1
+            for word in split_word(str(cap), tokenizer):
+                word2cnt[str(word)] += 1
         except TypeError:
             pass
 
     # extract top freq character
-    top_ch_lst = []
-    for ch, cnt in sorted(char2cnt.items(), key=lambda x:-x[1]):
+    top_word_lst = []
+    for word, cnt in sorted(word2cnt.items(), key=lambda x:-x[1]):
         if cnt < min_freq:
             break
-        top_ch_lst.append(ch)
+        top_word_lst.append(word)
 
     # build vocabulary
-    vocab = build_vocab(top_ch_lst)
+    vocab = build_vocab(top_word_lst)
     with open(save_path, "wb") as f:
         pickle.dump(vocab, f)
     logger.debug("Number of vocabulary: {}".format(len(vocab)))
