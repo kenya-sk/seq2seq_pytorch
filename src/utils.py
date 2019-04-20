@@ -41,10 +41,12 @@ def to_variable(x):
     return Variable(x)
 
 
-def caption_tensor(caption, vocab):
+def caption_tensor(caption, vocab, tokenizer):
+    caption = str(caption).replace(" ", "").replace("　", "")
     target = []
     target.append(vocab("<start>"))
-    target.extend([vocab(char) for char in str(caption)])
+    for token in tokenizer.tokenize(caption):
+        target.append(vocab(token.surface))
     target.append(vocab("<end>"))
     target = torch.Tensor(target)
 
