@@ -49,8 +49,8 @@ def caption_tensor(caption, vocab, tokenizer, reverse=False):
     for token in tokenizer.tokenize(caption):
         target.append(vocab(token.surface))
     target.append(vocab("<end>"))
-    target = reversed(target) if reverse
-    target = torch.Tensor(target)
+    target = reversed(target) if reverse else target
+    # target = torch.Tensor(target)
 
     return target
 

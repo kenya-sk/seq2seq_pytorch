@@ -1,6 +1,7 @@
 import pandas as pd
 import pickle
 import logging
+from janome.tokenizer import Tokenizer
 from collections import defaultdict
 
 from utils import Vocabulary
