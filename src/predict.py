@@ -38,7 +38,8 @@ def prediction(text_lst, en_vocab, de_vocab, model, tokenizer):
             conv_out_lst.append(de_vocab.idx2word[max_idx])
         pred_lst.append(conv_out_lst)
 
-    return pred_lst
+    # NEED FIX
+    return pred_lst[1:]
         
 
 if __name__ == "__main__":
@@ -73,7 +74,7 @@ if __name__ == "__main__":
     tokenizer = Tokenizer()
 
     # source text
-    src_text = ["森のぼかしの使い方と揺れ方", "私は上から来ます！気をつけて！！"]
+    src_text = ["", "私は上から来ます！気をつけて！！"]
 
     pred_lst = prediction(src_text, en_vocab, de_vocab, seq2seq, tokenizer)
     print(pred_lst)
