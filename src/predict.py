@@ -28,6 +28,7 @@ def prediction(text_lst, en_vocab, de_vocab, model, tokenizer):
         id_lst.append(caption_tensor(text_lst[i], en_vocab, tokenizer, reverse=False))
 
     conv_text = padding_text(id_lst)
+    print(conv_text.shape)
     output = model(src=conv_text, trg=conv_text, teacher_forcing_ratio=0.0)
 
     pred_lst = []
@@ -74,7 +75,8 @@ if __name__ == "__main__":
     tokenizer = Tokenizer()
 
     # source text
-    src_text = ["", "私は上から来ます！気をつけて！！"]
+    #src_text = ["", "私は上から来ます！気をつけて！！"]
+    src_text = ["", "\"私は上から来ます！気をつけて！！\""]
 
     pred_lst = prediction(src_text, en_vocab, de_vocab, seq2seq, tokenizer)
     print(pred_lst)
