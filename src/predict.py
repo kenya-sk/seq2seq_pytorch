@@ -1,42 +1,55 @@
 import numpy as np
 import pickle
+from janome.tokenizer import Tokenizer
 import torch
 from torch.autograd import Variable
 
 from model import Encoder, Decoder, Seq2Seq
+from utils import Vocabulary, caption_tensor
 
 
-def conv_text2id(text, vocab):
-    id_lst = [vocab.word2idx["<start>"]]
-    for ch in str(text):
-        id_lst.append(vocab.word2idx[ch])
+def padding_text(sources):
+    # Merge captions (from tuple of 1D tensor to 2D tensor).
+    src_len = [len(src) for src in sources]
 
-    id_lst.append(vocab.word2idx["<end>"])
-    return id_lst
+    conv_src = torch.zeros(len(sources), max(src_len)).long()
+    for i, cap in enumerate(sources):
+        end = src_len[i]
+        conv_src[i, :end] = torch.Tensor(cap[:end]).long() 
+
+    return conv_src
 
 
-def prediction(src_text, en_vocab, de_vocab, model):
+def prediction(text_lst, en_vocab, de_vocab, model, tokenizer):
     model.eval()
 
-    id_lst = conv_text2id(src_text, en_vocab)
-    conv_text = Variable(torch.Tensor([id_lst])).long()
-    output = model(src=conv_text, trg=conv_text, teacher_forcing_ratio=0.0)[0]
+    id_lst = []
+    for i in range(len(text_lst)):
+        id_lst.append(caption_tensor(text_lst[i], en_vocab, tokenizer, reverse=False))
+
+    conv_text = padding_text(id_lst)
+    print(conv_text.shape)
+    output = model(src=conv_text, trg=conv_text, teacher_forcing_ratio=0.0)
 
     pred_lst = []
-    for i in range(output.shape[0]):
-        max_idx = int(np.argmax(output[i]).data.cpu())
-        pred_lst.append(de_vocab.idx2word[max_idx])
+    for batch in range(output.shape[0]):
+        conv_out_lst = []
+        for idx in range(output.shape[1]):
+            max_idx = int(np.argmax(output[batch][idx].detach().numpy()))
+            conv_out_lst.append(de_vocab.idx2word[max_idx])
+        pred_lst.append(conv_out_lst)
 
-    return pred_lst
+    # NEED FIX
+    return pred_lst[1:]
         
 
 if __name__ == "__main__":
     # load encoder vocaluraly
-    en_vocab_path = "../data/vocab/en_vocab.pth"
+    en_vocab_path = "../data/vocab/format_en_word_vocab.pth"
     with open(en_vocab_path, "rb") as f:
         en_vocab = pickle.load(f)
     # load decoder vocaburaly
-    de_vocab_path = "../data/vocab/de_vocab.pth"
+    de_vocab_path = "../data/vocab/format_de_word_vocab.pth"
     with open(de_vocab_path, "rb") as f:
         de_vocab = pickle.load(f)
 
@@ -54,12 +67,16 @@ if __name__ == "__main__":
                     n_layers=en_n_layers, dropout=en_dropout)
     decoder = Decoder(embed_dim, hidden_dim, de_size,
                     n_layers=de_n_layers, dropout=de_dropout)
-    model_path = "../data/model/best_model.pth"
+    model_path = "../data/model/format_best_model.pth"
     seq2seq = Seq2Seq(encoder, decoder)
     seq2seq.load_state_dict(torch.load(model_path, map_location=lambda storage, loc: storage))
 
-    # source text
-    src_text = "森のぼかしの使い方と揺れ方"
+    # define tokenizer
+    tokenizer = Tokenizer()
 
-    pred_lst = prediction(src_text, en_vocab, de_vocab, seq2seq)
+    # source text
+    #src_text = ["", "私は上から来ます！気をつけて！！"]
+    src_text = ["", "\"私は上から来ます！気をつけて！！\""]
+
+    pred_lst = prediction(src_text, en_vocab, de_vocab, seq2seq, tokenizer)
     print(pred_lst)

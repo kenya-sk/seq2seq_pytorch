@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
+from janome.tokenizer import Tokenizer
 import torch
 import torch.utils.data as data
 
@@ -13,13 +14,14 @@ class SeqDataset(data.Dataset):
         self._data_df = pd.read_csv(file_path)
         self._en_vocab = en_vocab
         self._de_vocab = de_vocab
+        self.tokenizer = Tokenizer()
 
     def __len__(self):
         return len(self._data_df)
 
     def __getitem__(self, idx):
-        src_cap = caption_tensor(self._data_df["src"][idx], self._en_vocab)
-        trg_cap = caption_tensor(self._data_df["trg"][idx], self._de_vocab)
+        src_cap = caption_tensor(self._data_df["src"][idx], self._en_vocab, self.tokenizer)
+        trg_cap = caption_tensor(self._data_df["trg"][idx], self._de_vocab, self.tokenizer)
 
         return src_cap, trg_cap
 
@@ -29,11 +31,12 @@ def collate_fn(data):
 #     data.sort(key=lambda x: len(x[1]), reverse=True)
 
     sources, targets = zip(*data)
+    print(sources)
 
     # Merge captions (from tuple of 1D tensor to 2D tensor).
     src_len = [len(src) for src in sources]
     trg_len = [len(trg) for trg in targets]
-    max_len = max(max(src_len), max(trg_len))
+    max_len = max(src_len, trg_len)
 
     conv_src = torch.zeros(len(sources), max_len).long()
     for i, cap in enumerate(sources):

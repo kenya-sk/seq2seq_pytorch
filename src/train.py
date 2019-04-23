@@ -106,12 +106,12 @@ def make_parse():
     )
 
     # data Argument
-    parser.add_argument("--train_path", type=str, default="../data/datasets/train.csv")
-    parser.add_argument("--val_path", type=str, default="../data/datasets/val.csv")
-    parser.add_argument("--en_vocab_path", type=str, default="../data/vocab/en_vocab.pth")
-    parser.add_argument("--de_vocab_path", type=str, default="../data/vocab/de_vocab.pth")
+    parser.add_argument("--train_path", type=str, default="../data/datasets/train_small.csv")
+    parser.add_argument("--val_path", type=str, default="../data/datasets/val_small.csv")
+    parser.add_argument("--en_vocab_path", type=str, default="../data/vocab/en_word_vocab_small.pth")
+    parser.add_argument("--de_vocab_path", type=str, default="../data/vocab/de_word_vocab_small.pth")
     parser.add_argument("--pre_trained_path", type=str, default=None)
-    parser.add_argument("--save_model_path", type=str, default="../data/model/best_model.pth")
+    parser.add_argument("--save_model_path", type=str, default="../data/model/best_model_samll.pth")
 
     # params Argument
     parser.add_argument("--en_n_layers", type=int, default=2)
