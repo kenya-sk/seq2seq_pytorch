@@ -36,10 +36,14 @@ def prediction(text_lst, en_vocab, de_vocab, model, tokenizer):
         conv_out_lst = []
         for idx in range(output.shape[1]):
             max_idx = int(np.argmax(output[batch][idx].detach().numpy()))
-            conv_out_lst.append(de_vocab.idx2word[max_idx])
+            de_word = de_vocab.idx2word[max_idx]
+            if de_word == "<unk>":
+                # replace source word
+                conv_out_lst.append(conv_text[idx])
+            else:
+                conv_out_lst.append(de_vocab.idx2word[max_idx])
         pred_lst.append(conv_out_lst)
 
-    # NEED FIX
     return pred_lst[1:]
         
 
