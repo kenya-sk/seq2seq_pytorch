@@ -20,7 +20,7 @@ def padding_text(sources):
     return conv_src
 
 
-def prediction(text_lst, en_vocab, de_vocab, model, tokenizer):
+def prediction(text_lst, en_vocab, de_vocab, model, tokenizer, thresh=-0.5):
     model.eval()
 
     id_lst = []
@@ -28,7 +28,6 @@ def prediction(text_lst, en_vocab, de_vocab, model, tokenizer):
         id_lst.append(caption_tensor(text_lst[i], en_vocab, tokenizer, reverse=False))
 
     conv_text = padding_text(id_lst)
-    print(conv_text.shape)
     output = model(src=conv_text, trg=conv_text, teacher_forcing_ratio=0.0)
 
     pred_lst = []
@@ -36,13 +35,15 @@ def prediction(text_lst, en_vocab, de_vocab, model, tokenizer):
         conv_out_lst = []
         for idx in range(output.shape[1]):
             max_idx = int(np.argmax(output[batch][idx].detach().numpy()))
+            # max prob range is -inf to 0
+            max_prob = output[batch][idx][max_idx].detach().numpy()
             de_word = de_vocab.idx2word[max_idx]
-            if de_word == "<unk>":
+            if (de_word == "<unk>") or (max_prob < thresh):
                 # replace source word
-                conv_out_lst.append(conv_text[idx])
+                conv_out_lst.append(text_lst[batch][idx])
             else:
                 conv_out_lst.append(de_vocab.idx2word[max_idx])
-        pred_lst.append(conv_out_lst)
+        pred_lst.append("".join(conv_out_lst))
 
     return pred_lst[1:]
         
