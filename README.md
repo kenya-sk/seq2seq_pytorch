@@ -1,7 +1,9 @@
-## seq2seq_pytorch
+# seq2seq_pytorch
 This repository reimplement Seq2Seq model by PyTorch.  
 paper: Sequence to Sequence Learning with Neural Networks  
 (https://papers.nips.cc/paper/5346-sequence-to-sequence-learning-with-neural-networks.pdf)
+
+<img src="./demo/model.png" margin="50" width="500" title="model"> 
 
 ### Getting Started
 
