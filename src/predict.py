@@ -5,7 +5,7 @@ import torch
 from torch.autograd import Variable
 
 from model import Encoder, Decoder, Seq2Seq
-from utils import Vocabulary, caption_tensor
+from sent_utils import Vocabulary, caption_tensor
 
 
 def padding_text(sources):
@@ -20,7 +20,7 @@ def padding_text(sources):
     return conv_src
 
 
-def prediction(text_lst, en_vocab, de_vocab, model, tokenizer):
+def predict(text_lst, en_vocab, de_vocab, model, tokenizer, thresh=-0.5):
     model.eval()
 
     id_lst = []
@@ -28,20 +28,28 @@ def prediction(text_lst, en_vocab, de_vocab, model, tokenizer):
         id_lst.append(caption_tensor(text_lst[i], en_vocab, tokenizer, reverse=False))
 
     conv_text = padding_text(id_lst)
-    print(conv_text.shape)
     output = model(src=conv_text, trg=conv_text, teacher_forcing_ratio=0.0)
 
     pred_lst = []
     for batch in range(output.shape[0]):
         conv_out_lst = []
+        text_word = []
+        for token in tokenizer.tokenize(text_lst[batch][1:-1]):
+            text_word.append(token.surface)
         for idx in range(output.shape[1]):
             max_idx = int(np.argmax(output[batch][idx].detach().numpy()))
-            conv_out_lst.append(de_vocab.idx2word[max_idx])
-        pred_lst.append(conv_out_lst)
+            # max prob range is -inf to 0
+            max_prob = output[batch][idx][max_idx].detach().numpy()
+            de_word = de_vocab.idx2word[max_idx]
+            if (de_word == "<unk>") or (max_prob < thresh):
+                # replace source word
+                conv_out_lst.append(text_lst[batch][idx])
+            else:
+                conv_out_lst.append(de_vocab.idx2word[max_idx])
+        pred_lst.append("".join(conv_out_lst))
 
-    # NEED FIX
-    return pred_lst[1:]
-        
+    return pred_lst
+
 
 if __name__ == "__main__":
     # load encoder vocaluraly
@@ -75,8 +83,7 @@ if __name__ == "__main__":
     tokenizer = Tokenizer()
 
     # source text
-    #src_text = ["", "私は上から来ます！気をつけて！！"]
-    src_text = ["", "\"私は上から来ます！気をつけて！！\""]
+    src_text = ["私は上から来ます！気をつけて！！", "\"道路の脇に二羽の小鳥。\""]
 
-    pred_lst = prediction(src_text, en_vocab, de_vocab, seq2seq, tokenizer)
+    pred_lst = predict(src_text, en_vocab, de_vocab, seq2seq, tokenizer, thresh=-0.5)
     print(pred_lst)
