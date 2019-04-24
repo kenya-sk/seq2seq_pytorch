@@ -5,7 +5,7 @@ import torch
 from torch.autograd import Variable
 
 from model import Encoder, Decoder, Seq2Seq
-from sent_utils import Vocabulary, caption_tensor
+from utils import Vocabulary, caption_tensor
 
 
 def padding_text(sources):

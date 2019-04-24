@@ -5,7 +5,7 @@ from janome.tokenizer import Tokenizer
 import torch
 import torch.utils.data as data
 
-from sent_utils import caption_tensor
+from utils import caption_tensor
 
 
 class SeqDataset(data.Dataset):
