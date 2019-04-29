@@ -51,7 +51,7 @@ def main(args):
     assert torch.cuda.is_available()
 
     # load encoder decoder vocab
-    logger.debug("Loading vVcabulary...")
+    logger.debug("Loading Vocabulary...")
     # encoder vocaluraly
     with open(args.en_vocab_path, "rb") as f:
         en_vocab = pickle.load(f)
