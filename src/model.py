@@ -68,16 +68,16 @@ class Decoder(nn.Module):
 
     def forward(self, input, last_hidden, encoder_outputs):
         # Get the embedding of the current input word (last output word)
-        embedded = self.embed(input).unsqueeze(0)  # (1,B,N)
+        embedded = self.embed(input).unsqueeze(0) 
         embedded = self.dropout(embedded)
         # Calculate attention weights and apply to encoder outputs
         attn_weights = self.attention(last_hidden[-1], encoder_outputs)
-        context = attn_weights.bmm(encoder_outputs.transpose(0, 1))  # (B,1,N)
-        context = context.transpose(0, 1)  # (1,B,N)
+        context = attn_weights.bmm(encoder_outputs.transpose(0, 1))
+        context = context.transpose(0, 1) 
         # Combine embedded input word and attended context, run through RNN
         rnn_input = torch.cat([embedded, context], 2)
         output, hidden = self.gru(rnn_input, last_hidden)
-        output = output.squeeze(0)  # (1,B,N) -> (B,N)
+        output = output.squeeze(0) 
         context = context.squeeze(0)
         output = self.out(torch.cat([output, context], 1))
         output = F.log_softmax(output, dim=1)
@@ -94,8 +94,7 @@ class Seq2Seq(nn.Module):
         batch_size = src.size(1)
         max_len = trg.size(0)
         vocab_size = self.decoder.output_size
-        #outputs = Variable(torch.zeros(max_len, batch_size, vocab_size)).cuda()
-        outputs = Variable(torch.zeros(max_len, batch_size, vocab_size))
+        outputs = Variable(torch.zeros(max_len, batch_size, vocab_size)).cuda()
 
         encoder_output, hidden = self.encoder(src)
         hidden = hidden[:self.decoder.n_layers]
@@ -106,7 +105,6 @@ class Seq2Seq(nn.Module):
             outputs[t] = output
             is_teacher = random.random() < teacher_forcing_ratio
             top1 = output.data.max(1)[1]
-            #output = Variable(trg.data[t] if is_teacher else top1).cuda()
-            output = Variable(trg.data[t] if is_teacher else top1)
+            output = Variable(trg.data[t] if is_teacher else top1).cuda()
             
         return outputs
